@@ -1,0 +1,163 @@
+{
+  "project_info": {
+    "project_number": "299115493363",
+    "project_id": "lifedrop-800d9",
+    "storage_bucket": "lifedrop-800d9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299115493363:android:668c2a0e670afea820c486",
+        "android_client_info": {
+          "package_name": "com.example.lifedrop_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuSXw9xCWWYCPQhGJ0y3cyXFjP_HmigB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299115493363:android:5519dd30011b26f920c486",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299115493363-kkjofn65lmok6r1458an7vcdhpo3201r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.project",
+            "certificate_hash": "7229ccb0184ca8708384ce8763e5b40c80715ceb"
+          }
+        },
+        {
+          "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuSXw9xCWWYCPQhGJ0y3cyXFjP_HmigB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299115493363:android:4d680b31ed716ff420c486",
+        "android_client_info": {
+          "package_name": "com.lifedrop.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuSXw9xCWWYCPQhGJ0y3cyXFjP_HmigB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299115493363:android:c3f66274dba8067620c486",
+        "android_client_info": {
+          "package_name": "com.reddropaid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuSXw9xCWWYCPQhGJ0y3cyXFjP_HmigB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299115493363:android:c3849c12d7b5111420c486",
+        "android_client_info": {
+          "package_name": "com.reddropaid.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuSXw9xCWWYCPQhGJ0y3cyXFjP_HmigB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299115493363-t9ureb35shns39ebnfn9a5crbt2fh7vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

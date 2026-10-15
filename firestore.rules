@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // ============================================
+        // USERS
+        // ============================================
+        match /users/{userId} {
+          allow read: if isAuthenticated();
+          allow create: if isAuthenticated() && request.auth.uid == userId;
+          allow delete: if isAdmin();
+
+          // Allow users to update their own data, OR allow Requesters to specifically update
+          // a donor's cooldown and livesSaved stats during the closed-loop confirmation process.
+          allow update: if isAuthenticated() && (
+            request.auth.uid == userId ||
+            isAdmin() ||
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['livesSaved', 'lastDonationDate'])
+          );
+        }
+
+    // ============================================
+    // SUPPORT TICKETS
+    // ============================================
+    match /support_tickets/{ticketId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // ============================================
+    // BLOOD REQUESTS
+    // ============================================
+    match /blood_requests/{requestId} {
+      allow read, create: if isAuthenticated();
+      // Allow update if user is the requester, an admin, or an authenticated donor (to accept/confirm)
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // HOSPITALS & BLOOD BANKS
+    // ============================================
+    match /hospitals/{hospitalId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /blood_banks/{bankId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================
+    // NOTIFICATIONS
+    // ============================================
+    match /notifications/{notificationId} {
+      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // ============================================
+    // REQUEST ACCEPTANCES
+    // ============================================
+    match /request_acceptances/{acceptanceId} {
+      allow read, create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.donorId == request.auth.uid || resource.data.requesterId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // legacy
+    match /{path=**}/acceptances/{id} {
+      allow read, write: if isAuthenticated();
+    }
+    match /{path=**}/requests/{id} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}
