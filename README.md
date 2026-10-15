@@ -37,9 +37,3 @@ Built as a full-stack solution featuring a donor-facing mobile application and a
   <img width="240" alt="Profile Screen" src="https://github.com/user-attachments/assets/636a34d5-7fd3-465f-838e-3c93732bec60" />
 </p>
 
-- Admin Dashboard
-<p align="center">
-  <img width="1280" height="611" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/ff15cd88-7f9d-4518-92db-142ddf8d6190" />
-  <img width="1278" height="564" alt="Report Screen" src="https://github.com/user-attachments/assets/315a04a7-2560-458c-880c-1566d5605aea" />
-  <img width="1280" height="612" alt="Blood Banks Screen" src="https://github.com/user-attachments/assets/578d0fcf-7206-4216-a844-94c47431c2af" />
-</p>
