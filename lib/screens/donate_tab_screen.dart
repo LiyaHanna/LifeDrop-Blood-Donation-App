@@ -80,10 +80,9 @@ class _DonateTabScreenState extends State<DonateTabScreen> {
     return requests.where((request) {
       final sameCity = city.isEmpty || request.city.toLowerCase() == city.toLowerCase();
       if (!sameCity) return false;
-      if (request.status.toLowerCase() != 'completed') return false;
+      if (request.status.toLowerCase() != 'fulfilled') return false;
       
-      final dateToCheck = request.completedAt ?? request.createdAt;
-      return !dateToCheck.isBefore(startOfMonth);
+      return !request.createdAt.isBefore(startOfMonth);
     }).length;
   }
 

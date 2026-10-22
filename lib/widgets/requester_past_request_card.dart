@@ -19,7 +19,7 @@ class RequesterPastRequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final String status = request.status.toLowerCase();
     final bool isCancelled = status == 'cancelled';
-    final bool isCompleted = status == 'completed';
+    final bool isFulfilled = status == 'fulfilled';
     final bool isExpired = request.isExpired;
 
     String statusText;
@@ -31,8 +31,8 @@ class RequesterPastRequestCard extends StatelessWidget {
       statusText = "Cancelled";
       statusIcon = Icons.cancel_outlined;
       statusColor = Colors.orange;
-    } else if (isCompleted) {
-      statusText = "Completed";
+    } else if (isFulfilled) {
+      statusText = "Fulfilled";
       statusIcon = Icons.check_circle;
       statusColor = Colors.green;
     } else if (isExpired) {
@@ -40,10 +40,9 @@ class RequesterPastRequestCard extends StatelessWidget {
       statusIcon = Icons.timer_off_outlined;
       statusColor = Colors.red.shade400;
     } else {
-      // Handles requests that were matched with donors but the requester never tapped 'Confirm Received'.
-      statusText = "Fulfilled (Awaiting Receipt)";
-      statusIcon = Icons.info_outline;
-      statusColor = Colors.blue;
+      statusText = "Fulfilled";
+      statusIcon = Icons.check_circle;
+      statusColor = Colors.green;
     }
 
     return Container(
@@ -74,7 +73,7 @@ class RequesterPastRequestCard extends StatelessWidget {
                 color: statusColor,
               ),
               Text(
-                ' $statusText (${formatDate(request.createdAt)})',
+                ' $statusText (${formatDate(isFulfilled && request.fulfilledAt != null ? request.fulfilledAt! : request.createdAt)})',
                 style: const TextStyle(fontSize: 13),
               ),
             ],

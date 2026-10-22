@@ -165,11 +165,11 @@ class _RequesterDashboardState extends State<RequesterDashboard> with SingleTick
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: _primaryRed));
         
-        // Filter: Only show active 'open' or 'fulfilled' requests that have NOT expired (< 48 hours).
+        // Filter: Only show active 'open' requests that have NOT expired (< 48 hours).
         final requests = snapshot.data?.where((r) {
           if (r.isExpired) return false;
           final s = r.status.toLowerCase();
-          return s == 'open' || s == 'fulfilled';
+          return s == 'open';
         }).toList() ?? [];
         
         if (requests.isEmpty) return const Center(child: Text('No active requests.'));
@@ -188,18 +188,18 @@ class _RequesterDashboardState extends State<RequesterDashboard> with SingleTick
     );
   }
 
-  /// Builds the 'Past' tab showing 'completed', 'cancelled', or 'expired' requests.
+  /// Builds the 'Past' tab showing 'fulfilled', 'cancelled', or 'expired' requests.
   Widget _buildPastRequestsList() {
     return StreamBuilder<List<BloodRequestModel>>(
       stream: _databaseService.getRequesterBloodRequestsStream(_currentUid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: _primaryRed));
         
-        // Filter: Include completed, cancelled, or expired (> 48 hours) requests.
+        // Filter: Include fulfilled, cancelled, or expired (> 48 hours) requests.
         final requests = snapshot.data?.where((r) {
           if (r.isExpired) return true;
           final s = r.status.toLowerCase();
-          return s == 'completed' || s == 'cancelled' || s == 'expired';
+          return s == 'fulfilled' || s == 'cancelled' || s == 'expired';
         }).toList() ?? [];
         
         if (requests.isEmpty) return const Center(child: Text('No past requests.'));
@@ -302,8 +302,11 @@ class _RequesterDashboardState extends State<RequesterDashboard> with SingleTick
               _buildDetailItem('Blood Type', request.bloodType, Icons.water_drop),
               _buildDetailItem('Urgency', request.urgency, Icons.priority_high),
               _buildDetailItem('Units', '${request.unitsFulfilled} / ${request.unitsRequired}', Icons.bloodtype),
-              _buildDetailItem('Date', _formatDate(request.createdAt), Icons.calendar_today),
-              if (request.status == 'cancelled' && request.cancellationReason != null) _buildDetailItem('Reason', request.cancellationReason!, Icons.info_outline),
+              _buildDetailItem('Date Posted', _formatDate(request.createdAt), Icons.calendar_today),
+              if (request.status == 'fulfilled' && request.fulfilledAt != null)
+                _buildDetailItem('Fulfilled At', _formatDate(request.fulfilledAt!), Icons.access_time),
+              if (request.status == 'cancelled' && request.cancellationReason != null) 
+                _buildDetailItem('Reason', request.cancellationReason!, Icons.info_outline),
               const Divider(height: 32),
               const Text('Donors', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),

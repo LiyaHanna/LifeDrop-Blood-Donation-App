@@ -15,9 +15,9 @@ class BloodRequestModel {
   final int unitsFulfilled;
   final DateTime createdAt;
   final List<String> acceptedDonorIds;
-  final String status; // 'open', 'fulfilled', 'completed', 'cancelled'
+  final String status; // 'open', 'fulfilled', 'cancelled', 'expired'
   final String? cancellationReason;
-  final DateTime? completedAt;
+  final DateTime? fulfilledAt;
 
   BloodRequestModel({
     required this.id,
@@ -33,7 +33,7 @@ class BloodRequestModel {
     this.acceptedDonorIds = const [],
     this.status = 'open',
     this.cancellationReason,
-    this.completedAt,
+    this.fulfilledAt,
   });
 
   /// Factory constructor to create a [BloodRequestModel] from a Firestore document map.
@@ -53,7 +53,7 @@ class BloodRequestModel {
       acceptedDonorIds: _parseStringList(map['acceptedDonorIds']),
       status: map['status'] ?? map['requestStatus'] ?? 'open',
       cancellationReason: map['cancellationReason']?.toString(),
-      completedAt: _parseOptionalDate(map['completedAt']),
+      fulfilledAt: _parseOptionalDate(map['fulfilledAt'] ?? map['completedAt']),
     );
   }
 
@@ -74,7 +74,7 @@ class BloodRequestModel {
       'acceptedDonorIds': acceptedDonorIds,
       'status': status,
       if (cancellationReason != null) 'cancellationReason': cancellationReason,
-      if (completedAt != null) 'completedAt': Timestamp.fromDate(completedAt!),
+      if (fulfilledAt != null) 'fulfilledAt': Timestamp.fromDate(fulfilledAt!),
     };
   }
 
@@ -100,7 +100,7 @@ class BloodRequestModel {
     List<String>? acceptedDonorIds,
     String? status,
     String? cancellationReason,
-    DateTime? completedAt,
+    DateTime? fulfilledAt,
   }) {
     return BloodRequestModel(
       id: id ?? this.id,
@@ -116,7 +116,7 @@ class BloodRequestModel {
       acceptedDonorIds: acceptedDonorIds ?? this.acceptedDonorIds,
       status: status ?? this.status,
       cancellationReason: cancellationReason ?? this.cancellationReason,
-      completedAt: completedAt ?? this.completedAt,
+      fulfilledAt: fulfilledAt ?? this.fulfilledAt,
     );
   }
 
@@ -174,7 +174,7 @@ class BloodRequestModel {
   bool isOpen() {
     final normalized = status.toLowerCase();
     if (normalized == 'closed' ||
-        normalized == 'completed' ||
+        normalized == 'fulfilled' ||
         normalized == 'cancelled' ||
         normalized == 'expired' ||
         isExpired) {
@@ -207,7 +207,7 @@ class BloodRequestModel {
         listEquals(other.acceptedDonorIds, acceptedDonorIds) &&
         other.status == status &&
         other.cancellationReason == cancellationReason &&
-        other.completedAt == completedAt;
+        other.fulfilledAt == fulfilledAt;
   }
 
   @override
@@ -225,6 +225,6 @@ class BloodRequestModel {
     acceptedDonorIds.hashCode ^
     status.hashCode ^
     cancellationReason.hashCode ^
-    completedAt.hashCode;
+    fulfilledAt.hashCode;
   }
 }

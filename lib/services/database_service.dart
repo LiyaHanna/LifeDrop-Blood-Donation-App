@@ -166,6 +166,9 @@ class DatabaseService {
   /// Returns a stream of all blood requests across the system.
   Stream<List<BloodRequestModel>> getBloodRequestsStream() {
     return _db.collection('blood_requests').snapshots().map((snapshot) {
+      // Automatically update expired requests in Firestore in the background
+      _checkAndMarkExpiredRequests(snapshot.docs);
+
       final requests = snapshot.docs
           .map((doc) => BloodRequestModel.fromMap(doc.data(), doc.id))
           .toList();
@@ -188,6 +191,9 @@ class DatabaseService {
         .where('requesterId', isEqualTo: requesterUid)
         .snapshots()
         .map((snapshot) {
+      // Automatically update expired requests in Firestore in the background
+      _checkAndMarkExpiredRequests(snapshot.docs);
+
       final requests = snapshot.docs
           .map((doc) => BloodRequestModel.fromMap(doc.data(), doc.id))
           .toList();
@@ -199,6 +205,37 @@ class DatabaseService {
       });
       return requests;
     });
+  }
+
+  /// Checks active requests and automatically updates their status to 'expired' in Firestore
+  /// if they were created more than 48 hours ago and are still 'open' or 'fulfilled'.
+  Future<void> _checkAndMarkExpiredRequests(List<QueryDocumentSnapshot> docs) async {
+    final now = DateTime.now();
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final status = (data['status'] ?? data['requestStatus'] ?? 'open').toString().toLowerCase();
+
+      if (status == 'open' || status == 'fulfilled') {
+        final createdAtRaw = data['createdAt'] ?? data['datePosted'];
+        DateTime? createdAt;
+        if (createdAtRaw is Timestamp) {
+          createdAt = createdAtRaw.toDate();
+        } else if (createdAtRaw is DateTime) {
+          createdAt = createdAtRaw;
+        }
+
+        if (createdAt != null) {
+          final difference = now.difference(createdAt);
+          if (difference.inHours >= 48) {
+            _db.collection('blood_requests').doc(doc.id).update({
+              'status': 'expired',
+              'requestStatus': 'expired',
+              'expiredAt': FieldValue.serverTimestamp(),
+            }).catchError((_) {});
+          }
+        }
+      }
+    }
   }
 
   /// Returns a stream of commitments (acceptances) made by a donor.
@@ -248,11 +285,11 @@ class DatabaseService {
         .map((doc) => BloodRequestModel.fromMap(doc.data(), doc.id))
         .toList();
 
-    // Rule 1: Check for active requests
+    // Rule 1: Check for active requests (only requests with status 'open')
     final activeRequests = requests.where((r) {
       if (r.isExpired) return false;
       final s = r.status.toLowerCase();
-      return s == 'open' || s == 'fulfilled';
+      return s == 'open';
     }).toList();
 
     if (activeRequests.isNotEmpty) {
@@ -447,23 +484,35 @@ class DatabaseService {
     });
   }
 
-  /// Atomically confirms that blood was received, closing the request and updating donor stats.
+  /// Atomically confirms that blood was received, updating acceptance status, request, and donor stats.
   Future<void> confirmBloodReceived(String requestId, String donorId) async {
     final WriteBatch batch = _db.batch();
 
     final DocumentReference requestRef = _db.collection('blood_requests').doc(requestId);
     final DocumentReference donorRef = _db.collection('users').doc(donorId);
 
-    // Finalize the request status.
+    // 1. Find and update the specific donor's acceptance record to 'completed'
+    final acceptanceQuery = await _db
+        .collection('request_acceptances')
+        .where('requestId', isEqualTo: requestId)
+        .where('donorId', isEqualTo: donorId)
+        .get();
+
+    for (final doc in acceptanceQuery.docs) {
+      batch.update(doc.reference, {'status': 'completed'});
+    }
+
+    // 2. Finalize the request status to fulfilled.
     batch.update(requestRef, {
-      'status': 'completed',
-      'requestStatus': 'completed',
-      'completedAt': FieldValue.serverTimestamp(),
+      'status': 'fulfilled',
+      'requestStatus': 'fulfilled',
+      'fulfilledAt': FieldValue.serverTimestamp(),
     });
 
-    // Update the donor's eligibility and impact stats.
+    // 3. Update the donor's eligibility and impact stats using Timestamp.now()
+    // so it is immediately available locally for cooldown calculations.
     batch.update(donorRef, {
-      'lastDonationDate': FieldValue.serverTimestamp(),
+      'lastDonationDate': Timestamp.now(),
       'livesSaved': FieldValue.increment(1),
     });
 

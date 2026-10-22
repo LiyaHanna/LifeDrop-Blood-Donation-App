@@ -66,8 +66,16 @@ class DonorRowWidget extends StatelessWidget {
                 child: const Text('Contact', style: TextStyle(fontSize: 12)),
               ),
               // Conditional Action: Confirm Receipt.
-              // Only visible for active requests (open or fulfilled).
-              if (request.status == 'open' || request.status == 'fulfilled')
+              // If already confirmed, show "Confirmed ✓", otherwise show the button if request is open.
+              if (acceptance.status.toLowerCase() == 'completed')
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    'Confirmed ✓',
+                    style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                )
+              else if (request.status.toLowerCase() == 'open')
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: ElevatedButton(
